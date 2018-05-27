@@ -15,11 +15,11 @@ def visualize_pca():
     Returns:
     """
     path = os.getcwd()
-    data_path = os.path.join(path, 'data', 'stock.csv')
+    data_path = os.path.join(path, 'data', 'raw', 'stock.csv')
     try:
         data = pd.read_csv(data_path)
     except IOError:
-        print('Please get dataset from tushare and store it in the data directory')
+        print('Unable to retrieve data. Please get dataset from tushare and store it in the data/raw directory')
         sys.exit()
     data = data[(data['date'] > '2015-01-01') & (data['date'] <= '2017-03-08')].reset_index()
     del data['date']

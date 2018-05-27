@@ -1,10 +1,11 @@
 import os
-import sys
 import pandas as pd
 from sklearn import preprocessing
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 import argparse
+from config import *
+import util
 
 
 def visualize_pca():
@@ -14,14 +15,9 @@ def visualize_pca():
     Args:
     Returns:
     """
-    path = os.getcwd()
-    data_path = os.path.join(path, 'data', 'raw', 'stock.csv')
-    try:
-        data = pd.read_csv(data_path)
-    except IOError:
-        print('Unable to retrieve data. Please get dataset from tushare and store it in the data/raw directory')
-        sys.exit()
-    data = data[(data['date'] > '2015-01-01') & (data['date'] <= '2017-03-08')].reset_index()
+    path = ['data', 'raw', 'stock.csv']
+    data = util.get_data(path)
+    data = data[(data['date'] > START_DATE) & (data['date'] <= END_DATE)].reset_index()
     del data['date']
     min_max_scaler = preprocessing.MinMaxScaler(feature_range=(-1, 1))
     np_scaled = min_max_scaler.fit_transform(data)

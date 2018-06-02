@@ -8,7 +8,7 @@ import os
 
 def add_rsi(data):
     """
-    Function to add new feature(rsi) to dataframe
+    Function to add new feature, Relative Strength Index (rsi) to dataframe
     Args:
         DataFrame<...>: Old dataframe
     Returns:
@@ -54,6 +54,32 @@ def add_rsi(data):
     return data
 
 
+def add_bband(data):
+    """
+    Function to add new feature, Bollinger Bands (bband) to dataframe
+    Args:
+        DataFrame<...>: Old dataframe
+    Returns:
+        DataFrame<...>
+        New dataframe of stocks data with new feature(bband)
+    """
+
+    # FutureWarning: pd.rolling_mean is deprecated for Series and will be removed in a future version
+    # MA = pd.Series(pd.rolling_mean(data['close'], PERIOD))
+    # MSD = pd.Series(pd.rolling_std(data['close'], PERIOD))
+
+    MA = data['close'].rolling(window=PERIOD, center=False).mean()
+    MSD = data['close'].rolling(window=PERIOD, center=False).std()
+    b1 = 4 * MSD / MA
+    B1 = pd.Series(b1, name='BollingerB_' + str(PERIOD))
+    data = data.join(B1)
+
+    b2 = (data['close'] - MA + 2 * MSD) / (4 * MSD)
+    B2 = pd.Series(b2, name='Bollinger%b_' + str(PERIOD))
+    data = data.join(B2)
+    return data
+
+
 def parse():
     """
     Function to interact with user to get the arguments
@@ -65,6 +91,7 @@ def parse():
     parser = argparse.ArgumentParser(
         description='Perform feature engineering to get new features to be experimented with.')
     parser.add_argument('--rsi', action='store_true', help='Add RSI feature to the dataset')
+    parser.add_argument('--bband', action='store_true', help='Add bband feature to the dataset')
     args = vars(parser.parse_args())
     if not any(args.values()):
         parser.error('No arguments provided, please set the flag at least one of the following: rsi')
@@ -83,9 +110,9 @@ if __name__ == '__main__':
     arguments = parse()
     name = 'stock'
     for feature in arguments:
-        name += '_' + feature
-        method = 'add_' + feature
         if arguments[feature]:
+            name += '_' + feature
+            method = 'add_' + feature
             print('Adding ' + feature.upper() + ' feature to dataset')
             df = globals()[method](df)
     path = os.path.join('data', name + '.csv')

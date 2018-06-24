@@ -62,11 +62,11 @@ def visualize_ica():
     min_max_scaler = preprocessing.MinMaxScaler(feature_range=(-1, 1))
     np_scaled = min_max_scaler.fit_transform(data)
     data = pd.DataFrame(np_scaled)
-    reduced_data = FastICA(n_components=9).fit_transform(data)
+    reduced_data = FastICA(n_components=2).fit_transform(data)
 
     # Plot the decision boundary. For that, we will assign a color to each
-    x_min, x_max = reduced_data[:, 0].min() - 1, reduced_data[:, 0].max() + 1
-    y_min, y_max = reduced_data[:, 1].min() - 1, reduced_data[:, 1].max() + 1
+    x_min, x_max = reduced_data[:, 0].min() - 0.1, reduced_data[:, 0].max() + 0.1
+    y_min, y_max = reduced_data[:, 1].min() - 0.1, reduced_data[:, 1].max() + 0.1
 
     fig = plt.figure(1)
     plt.clf()
